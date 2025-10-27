@@ -821,5 +821,25 @@ document.getElementById('openStats').addEventListener('click', openStatsModal);
 
 })(); // IIFE
 </script>
+<!-- ✅ Fix bouton "Fermer" du panneau Statistiques -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const closeStatsBtn = document.getElementById("closeStats");
+  if (closeStatsBtn) {
+    closeStatsBtn.addEventListener("click", () => {
+      // Essaie de masquer la fenêtre Statistiques selon sa structure
+      const statsPanel = document.getElementById("statsPanel") 
+                      || document.querySelector(".stats-container")
+                      || document.querySelector(".stats-panel")
+                      || document.querySelector(".modal");
+      if (statsPanel) {
+        statsPanel.style.display = "none";
+      }
+    });
+  }
+});
+</script>
+  <!-- ✅ Fix bouton "Fermer" du panneau Statistiques -->
+<script>
 </body>
 </html>
