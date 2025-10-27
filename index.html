@@ -1,845 +1,146 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"/>
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>🏆 HYBRID MASTER 51</title>
-<!-- Chart.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ultimate v2 – Force & Feu</title>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-:root {
---bg-primary: #0a0e17;
---bg-card: #151a25;
---bg-card-light: #1a202e;
---accent: #F59E0B;
---accent-dark: #d97706;
---text-primary: #ffffff;
---text-secondary: #8b92a8;
---border: rgba(255,255,255,0.08);
---success: #10b981;
---danger: #ef4444;
---muscle-primary: #F59E0B;
---muscle-secondary: #3b82f6;
---muscle-tertiary: #8b5cf6;
-}
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html { font-size: 16px; }
-html, body { height:100%; margin:0; padding:0; background:var(--bg-primary); color:var(--text-primary); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; overflow-x:hidden; }
-.container-mobile { max-width:430px; padding:20px; margin:0 auto; }
-.header-main { text-align:center; padding:32px 0 40px; }
-.header-title { font-size:36px; font-weight:800; background:linear-gradient(135deg,#F59E0B 0%, #fbbf24 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin:12px 0; }
-.week-card, .card-dark, .exercise-card { background:var(--bg-card); border-radius:20px; padding:24px; margin-bottom:20px; border:1px solid var(--border); }
-.session-grid { display:grid; gap:14px; grid-template-columns:1fr; }
-.session-btn, .quick-session-btn { padding:22px; border-radius:14px; border:none; font-weight:700; font-size:17px; cursor:pointer; text-align:center; }
-.session-btn { background: linear-gradient(135deg,var(--accent) 0%, var(--accent-dark) 100%); color:var(--bg-primary); box-shadow:0 6px 16px rgba(245,158,11,0.3); }
-.quick-session-btn { background: linear-gradient(135deg,#10b981 0%, #059669 100%); color:var(--bg-primary); box-shadow:0 6px 16px rgba(16,185,129,0.3); }
-.btn-primary { background:var(--accent); color:var(--bg-primary); padding:12px 20px; border-radius:12px; border:none; font-weight:700; cursor:pointer; }
-.btn-nav, .btn-dashboard, .btn-secondary { background:var(--bg-card-light); color:var(--text-primary); border-radius:12px; padding:12px 16px; border:1px solid var(--border); cursor:pointer; }
-.btn-save { background:var(--accent); color:var(--bg-primary); padding:12px 16px; border-radius:12px; border:none; font-weight:700; cursor:pointer; }
-.screen { display:none; min-height:100vh; padding-bottom:140px; }
-.screen.active { display:block; }
-.exercise-list { display:flex; flex-direction:column; gap:18px; padding-bottom:60px; }
-.exercise-header { padding:18px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:16px; }
-.exercise-name { font-size:18px; font-weight:700; color:var(--accent); }
-.exercise-meta { color:var(--text-secondary); font-size:14px; }
-.exercise-details { max-height:0; overflow:hidden; transition:max-height 0.3s ease; background:var(--bg-card-light); }
-.exercise-details.open { max-height:3000px; padding:24px; border-top:1px solid var(--border); }
-.set-row { display:grid; grid-template-columns:90px 1fr 1fr 56px; gap:12px; align-items:center; margin-bottom:12px; padding:12px; background:var(--bg-card); border-radius:12px; border:1px solid var(--border); }
-.set-input { background:var(--bg-primary); border:2px solid var(--border); color:var(--text-primary); padding:12px; border-radius:10px; text-align:center; font-weight:700; }
-.set-checkbox { display:none; }
-.set-checkbox + label { width:44px; height:44px; border-radius:50%; border:3px solid var(--border); display:flex; align-items:center; justify-content:center; cursor:pointer; background:var(--bg-card-light); }
-.set-checkbox:checked + label { background:var(--success); border-color:var(--success); transform:scale(1.1); box-shadow:0 0 20px rgba(16,185,129,0.4); }
-.rest-timer-fixed { position:fixed; bottom:-180px; left:50%; transform:translateX(-50%); background:var(--bg-card); border-radius:24px; border:2px solid var(--border); box-shadow:0 -12px 50px rgba(0,0,0,0.7); width:94%; max-width:410px; padding:20px; z-index:1000; transition:bottom .45s cubic-bezier(.68,-.55,.265,1.55); }
-.rest-timer-fixed.visible { bottom:28px; }
-.timer-text { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-weight:700; color:var(--accent); font-size:20px; }
-.modal { position:fixed; inset:0; display:none; align-items:center; justify-content:center; padding:20px; z-index:2000; }
-.modal.active { display:flex; }
-.modal-content { background:var(--bg-card); border-radius:16px; padding:20px; max-width:760px; width:100%; max-height:86vh; overflow:auto; border:1px solid var(--border); }
-.canvas-wrap { background:var(--bg-card-light); padding:12px; border-radius:12px; margin-bottom:12px; border:1px solid var(--border); }
-.muscle-map { width:260px; height:360px; margin:0 auto 12px auto; display:block; }
-.controls-row { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
-.small { font-size:13px; padding:8px 10px; }
-.summary-line { display:flex; justify-content:space-between; gap:8px; align-items:center; margin-bottom:8px; }
-@media (min-width:900px) { .container-mobile { max-width:900px; } .modal-content{max-width:900px;} }
+  :root {
+    --primary: #ff6600;
+    --accent: #ff9933;
+    --bg1: #0d0d0d;
+    --bg2: #1a0000;
+  }
+  body {
+    margin: 0;
+    font-family: Poppins, Arial, sans-serif;
+    background: linear-gradient(180deg, var(--bg1), var(--bg2));
+    color: #fff;
+    text-align: center;
+  }
+  header {
+    background: rgba(255,102,0,0.1);
+    padding: 20px;
+    font-size: 1.7em;
+    font-weight: 600;
+    text-shadow: 0 0 8px var(--primary);
+  }
+  main { padding: 20px; }
+  button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 25px;
+    font-size: 1em;
+    cursor: pointer;
+    margin: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 8px var(--primary);
+  }
+  button:hover { background: var(--accent); transform: scale(1.05); }
+  button:active { transform: scale(0.96); box-shadow: 0 0 15px var(--accent); }
+  #statsPanel, #muscleModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(6px);
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    transition: opacity 0.4s ease;
+  }
+  #statsPanel.show, #muscleModal.show { display: flex; }
+  .panel {
+    background: rgba(30,30,30,0.9);
+    border-radius: 12px;
+    padding: 20px;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 0 15px #000;
+  }
+  canvas { width: 100%; height: 300px; }
 </style>
 </head>
 <body>
-<!-- REST TIMER -->
-<div id="restTimer" class="rest-timer-fixed" aria-hidden="true">
-  <div style="display:flex;align-items:center;gap:16px;">
-    <div style="position:relative;width:72px;height:72px;">
-      <svg width="72" height="72" viewBox="0 0 80 80">
-        <circle cx="40" cy="40" r="36" stroke="rgba(255,255,255,0.08)" stroke-width="6" fill="none"></circle>
-        <circle id="timerProgressCircle" cx="40" cy="40" r="36" stroke="#F59E0B" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="226" stroke-dashoffset="226"></circle>
-      </svg>
-      <div id="timerText" class="timer-text">0:00</div>
-    </div>
-    <div style="flex:1;">
-      <div id="nextExerciseName" style="font-weight:700;color:var(--accent);">Repos</div>
-      <div style="font-size:13px;color:var(--text-secondary);">Temps de repos</div>
-    </div>
-    <button id="skipTimerBtn" class="btn-nav small" title="Ignorer le repos">Ignorer</button>
+<header>🔥 Ultimate v2 – Force & Feu 🔥</header>
+<main>
+  <button id="openStats">📊 Statistiques</button>
+  <button id="openMuscle">💪 Muscles</button>
+</main>
+
+<div id="statsPanel">
+  <div class="panel">
+    <h2>Statistiques</h2>
+    <canvas id="statsChart"></canvas>
+    <button id="closeStats">Fermer</button>
   </div>
 </div>
 
-<!-- HOME -->
-<div id="home" class="screen active">
-  <div class="container-mobile">
-    <header class="header-main">
-      <div style="font-size:48px">🏆</div>
-      <h1 class="header-title">HYBRID MASTER 51</h1>
-      <p style="color:var(--text-secondary)">26 semaines • 3 séances/semaine</p>
-    </header>
-
-    <div class="week-card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <div>
-          <div style="font-weight:700;font-size:18px">Semaine <span id="weekDisplay">1</span></div>
-          <div id="blockName" style="color:var(--text-secondary)">Bloc</div>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button id="prevWeek" class="btn-nav small">← Préc.</button>
-          <button id="advanceWeek" class="btn-primary small">Suiv. →</button>
-        </div>
-      </div>
-      <div id="progList" class="session-grid"></div>
-    </div>
-
-    <div class="card-dark">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <div style="font-weight:700">Tableau de Bord</div>
-        <div id="quickMsg" style="color:var(--text-secondary)">Prêt.</div>
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button id="openStats" class="btn-dashboard small">📊 Stats</button>
-        <button id="muscleAnalysisBtn" class="btn-dashboard small">💪 Muscles</button>
-        <button id="exportWeights" class="btn-dashboard small">💾 Export</button>
-        <button id="cloudBackupBtn" class="btn-dashboard small">☁️ Backup</button>
-        <button id="resetApp" class="btn-dashboard small" style="color:var(--danger);border-color:rgba(239,68,68,0.35)">⚠️ Reset</button>
-      </div>
-    </div>
+<div id="muscleModal">
+  <div class="panel">
+    <h2>Muscles travaillés</h2>
+    <canvas id="muscleChart"></canvas>
+    <button id="closeMuscle">Fermer</button>
   </div>
-</div>
-
-<!-- SESSION -->
-<div id="session" class="screen">
-  <div class="container-mobile">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;position:sticky;top:0;background:var(--bg-primary);z-index:10;margin-bottom:12px">
-      <button id="backHomeBtn" class="btn-nav small">← Retour</button>
-      <div id="sessionTitle" style="font-weight:700;color:var(--accent)">Séance</div>
-      <div style="width:80px"></div>
-    </div>
-
-    <div id="exerciseList" class="exercise-list"></div>
-  </div>
-</div>
-
-<!-- MODAL -->
-<div id="modal" class="modal" aria-hidden="true">
-  <div class="modal-content" id="modalContent"></div>
 </div>
 
 <script>
-(function(){
-'use strict';
-
-/* -----------------------
-   DATA / PROGRAM
-   ----------------------- */
-
-const MUSCLE_MAPPING = {
-  "Trap Bar Deadlift": { primary:["Quadriceps","Fessiers","Ischios"], secondary:["Dos","Abdominaux"], tertiary:["Mollets","Avant-bras"] },
-  "Goblet Squat": { primary:["Quadriceps","Fessiers"], secondary:["Ischios","Abdominaux"], tertiary:["Mollets"] },
-  "Lat Pulldown": { primary:["Dos","Grand dorsal"], secondary:["Biceps","Avant-bras"], tertiary:["Épaules"] },
-  "Leg Press": { primary:["Quadriceps","Fessiers"], secondary:["Ischios"], tertiary:["Mollets"] },
-  "Landmine Press": { primary:["Pectoraux","Épaules"], secondary:["Triceps"], tertiary:["Abdominaux"] },
-  "Incline Curl": { primary:["Biceps"], secondary:["Avant-bras"], tertiary:[] },
-  "Reverse Curl": { primary:["Avant-bras"], secondary:["Biceps"], tertiary:[] },
-  "Dumbbell Press": { primary:["Pectoraux"], secondary:["Épaules","Triceps"], tertiary:[] },
-  "Close-Grip Bench Press": { primary:["Triceps","Pectoraux"], secondary:["Épaules"], tertiary:[] },
-  "Lateral Raises": { primary:["Épaules"], secondary:["Trapèzes"], tertiary:[] },
-  "Face Pull": { primary:["Épaules postérieures","Rhomboïdes"], secondary:["Trapèzes"], tertiary:[] },
-  "Cable Curl": { primary:["Biceps"], secondary:["Avant-bras"], tertiary:[] },
-  "Rope Hammer Curl": { primary:["Biceps","Avant-bras"], secondary:[], tertiary:[] },
-  "Triceps Pushdown": { primary:["Triceps"], secondary:[], tertiary:[] },
-  "Landmine Row": { primary:["Dos","Grand dorsal"], secondary:["Biceps","Avant-bras"], tertiary:["Épaules"] },
-  "Leg Curl": { primary:["Ischios"], secondary:["Fessiers"], tertiary:["Mollets"] },
-  "Leg Extension": { primary:["Quadriceps"], secondary:[], tertiary:[] },
-  "Dumbbell Fly": { primary:["Pectoraux"], secondary:["Épaules"], tertiary:[] },
-  "EZ Bar Curl": { primary:["Biceps"], secondary:["Avant-bras"], tertiary:[] },
-  "Wrist Curl": { primary:["Avant-bras"], secondary:[], tertiary:[] }
-};
-
-const PROGRAM = {
-  dimanche: { key:'dimanche', title:"Dimanche - Dos + Jambes Lourdes", exercises:[
-    { name:"Trap Bar Deadlift", sets:4, reps:"6-8", rest:150, weight:75, tech:"Tempo 3-1-2" },
-    { name:"Goblet Squat", sets:3, reps:"10", rest:90, weight:25, tech:"Tempo 3-1-2" },
-    { name:"Lat Pulldown", sets:3, reps:"10", rest:90, weight:60, tech:"Tempo 2-1-2" },
-    { name:"Leg Press", sets:3, reps:"12", rest:120, weight:110, tech:"Tempo 2-1-2" },
-    { name:"Landmine Press", sets:3, reps:"10", rest:120, weight:40, tech:"Standard" },
-    { name:"Incline Curl", sets:2, reps:"12", rest:75, weight:14, tech:"Tempo 2-1-2" },
-    { name:"Reverse Curl", sets:2, reps:"15", rest:75, weight:8, tech:"Tempo 3-1-2" }
-  ]},
-  mardi: { key:'mardi', title:"Mardi - Pecs + Épaules + Bras", exercises:[
-    { name:"Dumbbell Press", sets:3, reps:"10", rest:120, weight:22, tech:"Tempo 2-1-2" },
-    { name:"Close-Grip Bench Press", sets:3, reps:"10", rest:90, weight:70, tech:"Standard" },
-    { name:"Lateral Raises", sets:3, reps:"15", rest:60, weight:8, tech:"Tempo 2-1-2" },
-    { name:"Face Pull", sets:3, reps:"15", rest:60, weight:20, tech:"Tempo 3-1-2" },
-    { name:"Cable Curl", sets:3, reps:"12", rest:75, weight:25, tech:"Standard" },
-    { name:"Rope Hammer Curl", sets:2, reps:"15", rest:60, weight:12, tech:"Standard" },
-    { name:"Triceps Pushdown", sets:2, reps:"12", rest:60, weight:25, tech:"Standard" }
-  ]},
-  vendredi: { key:'vendredi', title:"Vendredi - Dos + Jambes Légères + Bras", exercises:[
-    { name:"Landmine Row", sets:3, reps:"10", rest:120, weight:50, tech:"Tempo 2-1-2" },
-    { name:"Leg Curl", sets:3, reps:"12", rest:90, weight:35, tech:"Tempo 3-1-2" },
-    { name:"Leg Extension", sets:3, reps:"15", rest:75, weight:40, tech:"Standard" },
-    { name:"Dumbbell Fly", sets:3, reps:"12", rest:75, weight:12, tech:"Tempo 3-1-2" },
-    { name:"EZ Bar Curl", sets:3, reps:"12", rest:60, weight:30, tech:"Standard" },
-    { name:"Wrist Curl", sets:3, reps:"20", rest:45, weight:8, tech:"Standard" }
-  ]}
-};
-
-const STATE_KEY = 'hm51_v8';
-const LAST_SESSION_KEY = 'hm51_last_session';
-let state = null;
-let currentSessionKey = null;
-let timerInterval = null;
-let timerRemainingSec = 0, timerTotalSec = 0;
-
-/* -----------------------
-   STATE MANAGEMENT
-   ----------------------- */
-
-function defaultState(){
-  const weights = {};
-  Object.values(PROGRAM).forEach(s => s.exercises.forEach(e => weights[e.name] = e.weight));
-  return { week:1, weights:weights, hist:{}, program: JSON.parse(JSON.stringify(PROGRAM)), customExercises:[] };
-}
-
-function loadState(){
-  try{
-    const raw = localStorage.getItem(STATE_KEY);
-    if(raw){
-      const loaded = JSON.parse(raw);
-      if(!loaded.customExercises) loaded.customExercises = [];
-      // ensure weights present
-      Object.values(PROGRAM).forEach(s => s.exercises.forEach(e => {
-        if(!loaded.weights) loaded.weights = {};
-        if(typeof loaded.weights[e.name] === 'undefined') loaded.weights[e.name] = e.weight;
-      }));
-      return loaded;
-    }
-  }catch(e){ console.error('loadState',e); }
-  return defaultState();
-}
-
-function saveState(){
-  try{ localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch(e){ console.error('saveState',e); }
-}
-
-/* -----------------------
-   UI HELPERS
-   ----------------------- */
-
-function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const el = document.getElementById(id);
-  if(el) el.classList.add('active');
-}
-
-function showQuickMsg(msg, color){
-  const el = document.getElementById('quickMsg');
-  if(!el) return;
-  el.textContent = msg;
-  if(color) el.style.color = color; else el.style.color = '#10b981';
-  setTimeout(()=>{ el.textContent = 'Prêt.'; el.style.color=''; }, 3000);
-}
-
-function getLastPerformance(exName){
-  const hist = state.hist[exName];
-  if(!hist || hist.length===0) return null;
-  return hist[hist.length-1];
-}
-
-function getBlockInfo(week){
-  if(week <= 5) return { name:'Bloc 1 - Fondation', tech:'Tempo contrôlé' };
-  if(week <= 11) return { name:'Bloc 2 - Surcharge', tech:'Rest-Pause' };
-  return { name:'Bloc 3 - Intensification', tech:'Drop-sets + Myo-reps' };
-}
-
-/* -----------------------
-   RENDER PROGRAM / SESSIONS
-   ----------------------- */
-
-function renderHeader(){
-  const weekDisplay = document.getElementById('weekDisplay');
-  const blockName = document.getElementById('blockName');
-  if(weekDisplay) weekDisplay.textContent = state.week;
-  if(blockName) blockName.textContent = getBlockInfo(state.week).name;
-}
-
-function renderProgramList(){
-  const progList = document.getElementById('progList');
-  if(!progList) return;
-  progList.innerHTML = '';
-
-  const lastSession = localStorage.getItem(LAST_SESSION_KEY);
-  const quickBtn = document.createElement('button');
-  quickBtn.className = 'quick-session-btn';
-  quickBtn.innerHTML = '<div style="font-size:16px;font-weight:800">⚡ Reprise Rapide</div><div style="font-size:13px;color:var(--text-secondary)">Dernière séance • 1 tap</div>';
-  quickBtn.onclick = function(){
-    if(lastSession && state.program[lastSession]){ openSession(lastSession); showQuickMsg('⚡ Séance reprise !'); }
-    else showQuickMsg('📝 Aucune séance récente', '#f59e0b');
-  };
-  progList.appendChild(quickBtn);
-
-  Object.values(state.program).forEach(s => {
-    const btn = document.createElement('button');
-    btn.className = 'session-btn';
-    const exCount = s.exercises.length;
-    const totalSets = s.exercises.reduce((sum,ex)=>sum+ex.sets,0);
-    btn.innerHTML = '<div style="font-size:16px;font-weight:800;margin-bottom:6px">'+s.title+'</div><div style="font-size:13px;color:var(--text-secondary)">'+exCount+' exercices • '+totalSets+' séries</div>';
-    btn.onclick = ()=> openSession(s.key);
-    progList.appendChild(btn);
-  });
-}
-
-/* -----------------------
-   OPEN SESSION / RENDER EXERCISES
-   ----------------------- */
-
-function openSession(key){
-  if(!state.program[key]) { showQuickMsg('Session inconnue', '#ef4444'); return; }
-  currentSessionKey = key;
-  try{ localStorage.setItem(LAST_SESSION_KEY, key); } catch(e){ console.error(e); }
-  showScreen('session');
-  const st = state.program[key];
-  const sessionTitle = document.getElementById('sessionTitle');
-  if(sessionTitle) sessionTitle.textContent = st.title;
-  const list = document.getElementById('exerciseList'); if(!list) return;
-  list.innerHTML = '';
-
-  st.exercises.forEach(ex => {
-    const w = state.weights[ex.name] || ex.weight;
-    const exId = ex.name.replace(/[^a-zA-Z0-9]/g,'');
-    const lastPerf = getLastPerformance(ex.name);
-    let perfBadge = lastPerf? '<div style="font-size:12px;color:#10b981;margin-top:6px">📊 Dernier: '+lastPerf.weight+'kg × '+lastPerf.reps+' reps</div>':''; 
-    const muscleData = MUSCLE_MAPPING[ex.name] || { primary:[], secondary:[], tertiary:[] };
-    let muscleBadge = '';
-    if(muscleData.primary.length>0){ muscleBadge = '<div style="margin-top:8px" class="muscle-groups">'; muscleData.primary.forEach(m=> muscleBadge += '<span class="muscle-tag muscle-primary" style="margin-right:6px;padding:4px 8px;border-radius:12px;background:rgba(245,158,11,0.12);color:var(--muscle-primary);">'+m+'</span>'); muscleBadge += '</div>'; }
-
-    const card = document.createElement('div'); card.className = 'exercise-card';
-    card.innerHTML = '<div class="exercise-header" data-exid="'+exId+'"><div style="flex:1"><div class="exercise-name">'+ex.name+'</div><div class="exercise-meta">'+ex.sets+' séries × '+ex.reps+' • '+ex.rest+'s repos • '+w+'kg</div>'+muscleBadge+perfBadge+'</div><div id="arrow-'+exId+'" style="font-size:20px;color:var(--text-secondary)">▼</div></div><div class="exercise-details" id="details-'+exId+'"></div>';
-    list.appendChild(card);
-
-    // attach click
-    const header = card.querySelector('.exercise-header');
-    if(header) header.addEventListener('click', ()=> toggleExerciseDetails(exId, ex));
-  });
-}
-
-/* -----------------------
-   RENDER DETAILS + REAL-TIME VOLUME
-   ----------------------- */
-
-function renderExerciseDetails(ex){
-  const exId = ex.name.replace(/[^a-zA-Z0-9]/g,'');
-  const details = document.getElementById('details-'+exId);
-  if(!details) return;
-  const w = state.weights[ex.name] || ex.weight;
-  const lastPerf = getLastPerformance(ex.name);
-  let techBanner = ex.tech;
-  if(state.week>5 && state.week<=11) techBanner = ex.tech + ' + Rest-Pause';
-  else if(state.week>11) techBanner = ex.tech + ' + Drop-sets';
-
-  let perfMsg = lastPerf? '<div style="background:rgba(16,185,129,0.08);padding:10px;border-radius:8px;margin-bottom:10px;color:#10b981">📊 Dernière: '+lastPerf.weight+'kg × '+lastPerf.reps+' reps (S'+lastPerf.week+')</div>' : '<div style="background:rgba(245,158,11,0.06);padding:10px;border-radius:8px;margin-bottom:10px;color:var(--accent)">⭐ Première fois pour cet exercice !</div>';
-
-  const muscleData = MUSCLE_MAPPING[ex.name] || { primary:[], secondary:[], tertiary:[] };
-  let muscleSection = '';
-  if(muscleData.primary.length>0){
-    muscleSection = '<div style="margin:10px 0;padding:10px;border-radius:8px;background:var(--bg-card)"><div style="font-weight:700;color:var(--accent);margin-bottom:8px">💪 Muscles sollicités</div>';
-    muscleData.primary.forEach(m=> muscleSection += '<span class="muscle-tag muscle-primary" style="margin-right:6px;padding:6px 10px;border-radius:12px;background:rgba(245,158,11,0.12)">'+m+'</span>');
-    muscleData.secondary.forEach(m=> muscleSection += '<span class="muscle-tag muscle-secondary" style="margin-right:6px;padding:6px 10px;border-radius:12px;background:rgba(59,130,246,0.08)">'+m+'</span>');
-    muscleData.tertiary.forEach(m=> muscleSection += '<span class="muscle-tag muscle-tertiary" style="margin-right:6px;padding:6px 10px;border-radius:12px;background:rgba(139,92,246,0.06)">'+m+'</span>');
-    muscleSection += '</div>';
-  }
-
-  let setsHtml = '';
-  for(let i=1;i<=ex.sets;i++){
-    // reps default pick first part of range
-    let defaultReps = (typeof ex.reps === 'number') ? ex.reps : parseInt(String(ex.reps).split('-')[0],10) || '';
-    setsHtml += '<div class="set-row">'+
-      '<div style="font-weight:700">Série '+i+'</div>'+
-      '<div><label class="input-label">KG</label><input type="number" class="set-input w-'+exId+'-'+i+'" step="0.5" value="'+w+'"></div>'+
-      '<div><label class="input-label">REPS</label><input type="number" class="set-input r-'+exId+'-'+i+'" value="'+defaultReps+'"></div>'+
-      '<div><input type="checkbox" id="s-'+i+'-'+exId+'" class="set-checkbox"><label for="s-'+i+'-'+exId+'"></label></div>'+
-    '</div>';
-  }
-
-  // Add real-time volume display placeholder
-  setsHtml += '<div style="margin-top:12px" id="volume-'+exId+'" class="summary-line"><div style="color:var(--text-secondary)">Volume (kg × reps × sets affiché ci-dessous)</div><div id="volumeVal-'+exId+'" style="font-weight:800">0 kg</div></div>';
-
-  setsHtml += '<div style="display:flex;gap:8px;margin-top:12px;"><button class="btn-secondary" onclick="modifyWeight(\''+encodeURIComponent(ex.name)+'\')">✏️ Modifier Poids</button><button class="btn-save" onclick="savePerf(\''+encodeURIComponent(ex.name)+'\')">💾 Enregistrer & Valider</button></div>';
-
-  details.innerHTML = '<div style="font-weight:700;color:var(--accent);margin-bottom:8px">'+techBanner+'</div>' + perfMsg + muscleSection + setsHtml;
-
-  // attach checkbox listeners for timer & inputs for realtime volume
-  document.querySelectorAll('#details-'+exId+' .set-checkbox').forEach((cb, idx) => {
-    cb.addEventListener('change', function(){
-      if(this.checked){
-        if(navigator.vibrate) navigator.vibrate(50);
-        const isLast = idx === ex.sets - 1;
-        const nextText = isLast ? 'Prochain exercice' : 'Repos';
-        startTimer(ex.rest, nextText);
-      }
-    });
-  });
-
-  // realtime volume update when inputs change
-  const updateVolume = () => {
-    let total = 0;
-    for(let i=1;i<=ex.sets;i++){
-      const wEl = document.querySelector('.w-'+exId+'-'+i);
-      const rEl = document.querySelector('.r-'+exId+'-'+i);
-      const wv = wEl? parseFloat(wEl.value) : 0;
-      const rv = rEl? parseInt(rEl.value,10) : 0;
-      if(!isNaN(wv) && !isNaN(rv)) total += (wv * rv);
-    }
-    const volEl = document.getElementById('volumeVal-'+exId);
-    if(volEl) volEl.textContent = Math.round(total) + ' kg';
-  };
-
-  // attach change listeners
-  for(let i=1;i<=ex.sets;i++){
-    const wEl = document.querySelector('.w-'+exId+'-'+i);
-    const rEl = document.querySelector('.r-'+exId+'-'+i);
-    if(wEl) wEl.addEventListener('input', updateVolume);
-    if(rEl) rEl.addEventListener('input', updateVolume);
-  }
-  updateVolume();
-}
-
-/* -----------------------
-   TOGGLE DETAILS
-   ----------------------- */
-
-function toggleExerciseDetails(exId, exObj){
-  const details = document.getElementById('details-'+exId);
-  const arrow = document.getElementById('arrow-'+exId);
-  if(!details) return;
-  const isOpen = details.classList.contains('open');
-  if(isOpen){
-    details.classList.remove('open');
-    arrow && arrow.classList.remove('open');
-  } else {
-    // close others
-    document.querySelectorAll('.exercise-details.open').forEach(d => d.classList.remove('open'));
-    document.querySelectorAll('.exercise-arrow.open').forEach(a => a.classList.remove('open'));
-    details.classList.add('open');
-    arrow && arrow.classList.add('open');
-    // render details content for this exercise
-    if(exObj) renderExerciseDetails(exObj);
-  }
-}
-
-/* -----------------------
-   MODAL HANDLERS
-   ----------------------- */
-
-function openModal(html){
-  const modal = document.getElementById('modal');
-  const content = document.getElementById('modalContent');
-  if(!modal || !content) return;
-  content.innerHTML = html;
-  modal.classList.add('active');
-  modal.setAttribute('aria-hidden','false');
-  // overlay click closes
-  modal.onclick = function(e){ if(e.target === modal) closeModal(); };
-}
-function closeModal(){
-  const modal = document.getElementById('modal');
-  if(!modal) return;
-  modal.classList.remove('active');
-  modal.setAttribute('aria-hidden','true');
-}
-
-/* -----------------------
-   MODIFY / SAVE WEIGHT / PERF
-   ----------------------- */
-
-window.modifyWeight = function(encodedName){
-  const name = decodeURIComponent(encodedName);
-  const curr = state.weights[name] || 0;
-  const html = '<h3 style="margin-bottom:10px;color:var(--accent)">Modifier poids — '+name+'</h3>' +
-    '<div style="margin-bottom:10px"><label class="input-label">Poids par défaut (kg)</label><input id="modalWeightInput" class="set-input" type="number" step="0.5" value="'+curr+'"></div>' +
-    '<div style="display:flex;gap:8px"><button class="btn-secondary" onclick="closeModal()">Annuler</button><button class="btn-save" onclick="saveWeight(\''+encodeURIComponent(name)+'\')">Enregistrer</button></div>';
-  openModal(html);
-};
-
-window.saveWeight = function(encodedName){
-  const name = decodeURIComponent(encodedName);
-  const input = document.getElementById('modalWeightInput');
-  if(!input) { closeModal(); return; }
-  const val = parseFloat(input.value);
-  if(isNaN(val) || val < 0) { alert('Poids invalide'); return; }
-  state.weights[name] = val;
-  saveState();
-  closeModal();
-  if(currentSessionKey) openSession(currentSessionKey);
-  renderProgramList();
-  showQuickMsg('Poids mis à jour');
-};
-
-window.savePerf = function(encodedName){
-  const name = decodeURIComponent(encodedName);
-  const exName = name;
-  const exId = exName.replace(/[^a-zA-Z0-9]/g,'');
-  const session = state.program[currentSessionKey];
-  if(!session){ showQuickMsg('Session introuvable', '#ef4444'); return; }
-  const ex = session.exercises.find(e => e.name === exName);
-  if(!ex){ showQuickMsg('Exercice introuvable', '#ef4444'); return; }
-  // grab first non-empty set
-  let firstWeight = null, firstReps = null;
-  for(let i=1;i<=ex.sets;i++){
-    const wEl = document.querySelector('.w-'+exId+'-'+i);
-    const rEl = document.querySelector('.r-'+exId+'-'+i);
-    if(wEl && firstWeight===null){ const v = parseFloat(wEl.value); if(!isNaN(v)) firstWeight = v; }
-    if(rEl && firstReps===null){ const rv = parseInt(rEl.value,10); if(!isNaN(rv)) firstReps = rv; }
-  }
-  if(firstWeight===null) firstWeight = state.weights[exName] || ex.weight || 0;
-  if(firstReps===null) {
-    firstReps = (typeof ex.reps === 'number') ? ex.reps : parseInt(String(ex.reps).split('-')[0],10) || 0;
-  }
-  if(!state.hist[exName]) state.hist[exName] = [];
-  state.hist[exName].push({ week: state.week, date: (new Date()).toISOString(), weight:firstWeight, reps:firstReps });
-  saveState();
-  showQuickMsg('✅ Performance sauvegardée');
-  if(currentSessionKey) openSession(currentSessionKey);
-};
-
-/* -----------------------
-   TIMER
-   ----------------------- */
-
-function updateTimerUI(){
-  const restEl = document.getElementById('restTimer');
-  const txt = document.getElementById('timerText');
-  const circle = document.getElementById('timerProgressCircle');
-  if(!restEl || !txt || !circle) return;
-  if(timerRemainingSec <= 0){
-    restEl.classList.remove('visible'); restEl.setAttribute('aria-hidden','true');
-    txt.textContent = '0:00'; circle.style.strokeDashoffset = 226;
-    return;
-  }
-  restEl.classList.add('visible'); restEl.setAttribute('aria-hidden','false');
-  const mm = Math.floor(timerRemainingSec/60); const ss = timerRemainingSec%60;
-  txt.textContent = mm + ':' + (ss<10? '0'+ss : ss);
-  const ratio = Math.max(0, timerRemainingSec) / Math.max(1, timerTotalSec);
-  circle.style.strokeDashoffset = 226 * ratio;
-}
-
-window.startTimer = function(seconds, nextText){
-  if(timerInterval) clearInterval(timerInterval);
-  timerTotalSec = Math.max(1, Math.floor(seconds));
-  timerRemainingSec = timerTotalSec;
-  const nextName = document.getElementById('nextExerciseName'); if(nextName) nextName.textContent = nextText || 'Repos';
-  updateTimerUI();
-  timerInterval = setInterval(function(){
-    timerRemainingSec--;
-    updateTimerUI();
-    if(timerRemainingSec <= 0){ clearInterval(timerInterval); timerInterval = null; showQuickMsg('⏱️ Repos terminé', '#f59e0b'); if(navigator.vibrate) navigator.vibrate([50,20,50]); }
-  }, 1000);
-};
-
-function stopTimer(){ if(timerInterval){ clearInterval(timerInterval); timerInterval=null; } timerRemainingSec=0; timerTotalSec=0; updateTimerUI(); }
-document.getElementById('skipTimerBtn').addEventListener('click', function(){ stopTimer(); showQuickMsg('⏭️ Repos ignoré', '#f59e0b'); });
-
-/* -----------------------
-   MUSCLE ANALYSIS & HEATMAP + CHARTS
-   ----------------------- */
-
-function computeMuscleWorkload(period='all', filterSessionKey=null){
-  // returns { muscle: { load:points, details: { sessionKey:points } } }
-  const result = {};
-  const sessions = Object.values(state.program);
-  sessions.forEach(sess => {
-    if(filterSessionKey && sess.key !== filterSessionKey) return;
-    sess.exercises.forEach(ex => {
-      const muscleData = MUSCLE_MAPPING[ex.name];
-      if(!muscleData) return;
-      // determine multiplier: use sets*reps*weight average (from state.weights)
-      const w = state.weights[ex.name] || ex.weight || 0;
-      const reps = (typeof ex.reps === 'number') ? ex.reps : parseInt(String(ex.reps).split('-')[0],10) || 0;
-      const intensity = w * reps * ex.sets; // simple proxy
-      muscleData.primary.forEach(m => { if(!result[m]) result[m]={load:0,details:{}}; result[m].load += intensity*3; result[m].details[sess.key] = (result[m].details[sess.key]||0) + intensity*3; });
-      muscleData.secondary.forEach(m => { if(!result[m]) result[m]={load:0,details:{}}; result[m].load += intensity*2; result[m].details[sess.key] = (result[m].details[sess.key]||0) + intensity*2; });
-      muscleData.tertiary.forEach(m => { if(!result[m]) result[m]={load:0,details:{}}; result[m].load += intensity*1; result[m].details[sess.key] = (result[m].details[sess.key]||0) + intensity*1; });
-    });
-  });
-  return result;
-}
-
-function showMuscleAnalysisModal(){
-  const workload = computeMuscleWorkload();
-  const muscles = Object.entries(workload).sort((a,b)=>b[1].load - a[1].load);
-  let html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h3 style="margin:0;color:var(--accent)">💪 Analyse Musculaire</h3><div style="font-size:13px;color:var(--text-secondary)">Par séance & global</div></div>';
-  html += '<div style="display:flex;gap:12px;flex-wrap:wrap">';
-  html += '<div style="flex:1;min-width:260px">';
-  html += '<div style="font-weight:700;margin-bottom:8px">Charge par muscle</div>';
-  muscles.forEach(([m,meta]) => {
-    html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg-card-light);border-radius:8px;margin-bottom:6px">';
-    html += '<div>'+m+'</div>';
-    html += '<div style="font-weight:800" class="volume-badge">'+Math.round(meta.load)+' pts</div>';
-    html += '</div>';
-  });
-  html += '</div>';
-  // right column: heatmap + controls
-  html += '<div style="width:380px;min-width:260px">';
-  html += '<div style="font-weight:700;margin-bottom:8px">Heatmap muscle</div>';
-  html += '<div id="muscleHeatmapWrap" style="text-align:center">';
-  html += renderMuscleSVG(workload);
-  html += '</div>';
-  html += '<div style="margin-top:8px;display:flex;gap:8px"><button class="btn-secondary small" onclick="renderMuscleSVGandChart()">Rafraîchir</button><button class="btn-save small" onclick="closeModal()">Fermer</button></div>';
-  html += '</div></div>';
-  openModal(html);
-}
-
-// SVG-based muscle map: simple rectangles / labels colored by load
-function renderMuscleSVG(workload){
-  // build a compact SVG where each muscle is a rect; color intensity from workload
-  const muscles = Object.keys(workload);
-  // list of muscle positions (simple layout)
-  const map = [
-    ['Quadriceps','Fessiers','Ischios'],
-    ['Dos','Grand dorsal','Rhomboïdes'],
-    ['Pectoraux','Épaules','Triceps'],
-    ['Biceps','Avant-bras','Mollets'],
-    ['Trapèzes','Abdominaux','Épaules postérieures']
-  ];
-  // flatten and unique
-  const all = Array.from(new Set(map.flat()));
-  // compute max load
-  const maxLoad = Math.max(1, ...Object.values(workload).map(w=>w.load));
-  let svg = '<svg class="muscle-map" viewBox="0 0 260 360" role="img" aria-label="Carte des muscles">';
-  let y=10;
-  const cellW = 80, cellH=48, gap=10, startX=10;
-  for(let row=0; row<map.length; row++){
-    const cols = map[row];
-    let x = startX;
-    for(let c=0;c<cols.length;c++){
-      const name = cols[c];
-      const w = workload[name] ? workload[name].load : 0;
-      const intensity = Math.min(1, w / maxLoad);
-      // color from light to accent
-      const alpha = 0.12 + 0.6*intensity;
-      const stroke = intensity>0.5 ? '#fbbf24' : 'rgba(255,255,255,0.06)';
-      svg += '<g transform="translate('+x+','+y+')">';
-      svg += '<rect width="'+cellW+'" height="'+cellH+'" rx="8" ry="8" fill="rgba(245,158,11,'+alpha+')" stroke="'+stroke+'" stroke-width="1"></rect>';
-      svg += '<text x="'+(cellW/2)+'" y="'+(cellH/2+6)+'" font-size="11" text-anchor="middle" fill="'+(intensity>0.4? '#021022' : '#ffffff')+'">'+name+'</text>';
-      svg += '</g>';
-      x += cellW + gap;
-    }
-    y += cellH + gap;
-  }
-  svg += '</svg>';
-  return svg;
-}
-
-function renderMuscleSVGandChart(){
-  // simply re-render modal content muscle map if exists
-  const wrap = document.getElementById('muscleHeatmapWrap');
-  if(!wrap) return;
-  const w = computeMuscleWorkload();
-  wrap.innerHTML = renderMuscleSVG(w);
-}
-
-/* -----------------------
-   CHARTS & STATS (Chart.js)
-   ----------------------- */
-
-function openStatsModal(){
-  // build summary and charts
-  const hist = state.hist || {};
-  // prepare dataset: for each exercise, timeline of weight/volume by date
-  const exNames = Array.from(new Set(Object.keys(state.weights).concat(Object.keys(hist))));
-  let html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h3 style="margin:0;color:var(--accent)">📊 Statistiques</h3><div style="font-size:13px;color:var(--text-secondary)">Poids / Volume / Muscles</div></div>';
-  html += '<div class="controls-row"><select id="chartExercise" class="set-input small" style="padding:8px"><option value="">-- Sélectionner exercice --</option>';
-  exNames.forEach(n => html += '<option value="'+escapeHtml(n)+'">'+n+'</option>');
-  html += '</select><button class="btn-secondary small" id="loadExChart">Charger</button><button class="btn-secondary small" id="exportPerfBtn">Export CSV</button><button class="btn-save small" onclick="closeModal()">Fermer</button></div>';
-  html += '<div style="display:flex;gap:12px;flex-wrap:wrap"><div style="flex:1;min-width:320px"><div class="canvas-wrap"><canvas id="exChart" height="220"></canvas></div></div><div style="flex:1;min-width:260px"><div class="canvas-wrap"><canvas id="muscleChart" height="220"></canvas></div></div></div>';
-  openModal(html);
-
-  // attach handlers
-  document.getElementById('loadExChart').addEventListener('click', function(){
-    const sel = document.getElementById('chartExercise').value;
-    if(!sel) { alert('Choisis un exercice'); return; }
-    drawExerciseChart(unescapeHtml(sel));
-  });
-  document.getElementById('exportPerfBtn').addEventListener('click', function(){ exportPerformances(); });
-
-  // initial muscle chart
-  drawMuscleChart();
-}
-
-function drawExerciseChart(exName){
-  const ctx = document.getElementById('exChart').getContext('2d');
-  // build series from history for this exercise
-  const data = (state.hist[exName] || []).map(h => ({ date: new Date(h.date), weight: h.weight, reps: h.reps }));
-  data.sort((a,b)=>a.date - b.date);
-  const labels = data.map(d => d.date.toLocaleDateString());
-  const weights = data.map(d => d.weight);
-  const vols = data.map(d => d.weight * d.reps);
-  // destroy existing chart if any
-  if(window._exChart) window._exChart.destroy();
-  window._exChart = new Chart(ctx, {
-    type: 'line',
-    data: { labels: labels, datasets:[
-      { label:'Poids (kg)', data:weights, borderColor:'#F59E0B', backgroundColor:'rgba(245,158,11,0.12)', yAxisID:'y' },
-      { label:'Volume (kg×reps)', data:vols, borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,0.08)', yAxisID:'y2' }
-    ]},
-    options: { responsive:true, interaction:{mode:'index',intersect:false}, stacked:false, scales:{ y:{ type:'linear', position:'left' }, y2:{ type:'linear', position:'right', grid:{drawOnChartArea:false} } } }
-  });
-}
-
-function drawMuscleChart(){
-  const ctx = document.getElementById('muscleChart').getContext('2d');
-  const workload = computeMuscleWorkload();
-  const entries = Object.entries(workload).sort((a,b)=>b[1].load - a[1].load).slice(0,10);
-  const labels = entries.map(e=>e[0]);
-  const data = entries.map(e=>Math.round(e[1].load));
-  if(window._muscleChart) window._muscleChart.destroy();
-  window._muscleChart = new Chart(ctx, {
-    type:'bar',
-    data:{ labels:labels, datasets:[{ label:'Charge (pts)', data:data, backgroundColor: labels.map(()=> 'rgba(245,158,11,0.6)') }]},
-    options:{ indexAxis:'y', responsive:true, plugins:{legend:{display:false}} }
-  });
-}
-
-/* -----------------------
-   EXPORT / BACKUP
-   ----------------------- */
-
-window.cloudBackup = function(){
-  try{
-    const payload = JSON.stringify(state, null, 2);
-    const blob = new Blob([payload], { type:'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url;
-    a.download = 'hm51-backup-'+(new Date()).toISOString().slice(0,10)+'.json';
-    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-    showQuickMsg('Backup téléchargé ✔️');
-  }catch(e){ console.error(e); showQuickMsg('Erreur backup', '#ef4444'); }
-};
-document.getElementById('cloudBackupBtn').addEventListener('click', cloudBackup);
-
-window.exportWeights = function(){
-  try{
-    let csv = 'exercise,weight\n';
-    Object.entries(state.weights).forEach(([k,v]) => { csv += '"'+k.replace(/"/g,'""')+'",'+v+'\n'; });
-    const blob = new Blob([csv], { type:'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = 'hm51-weights-'+(new Date()).toISOString().slice(0,10)+'.csv';
-    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-    showQuickMsg('Export poids téléchargé ✔️');
-  }catch(e){ console.error(e); showQuickMsg('Erreur export', '#ef4444'); }
-};
-document.getElementById('exportWeights').addEventListener('click', exportWeights);
-
-// export performances (history) CSV
-function exportPerformances(){
-  try{
-    let csv = 'exercise,date,week,weight,reps\n';
-    Object.entries(state.hist || {}).forEach(([ex,arr]) => {
-      arr.forEach(r => csv += '"'+ex.replace(/"/g,'""')+'","'+r.date+'","'+r.week+'","'+r.weight+'","'+r.reps+'"\n');
-    });
-    const blob = new Blob([csv], { type:'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = 'hm51-performances-'+(new Date()).toISOString().slice(0,10)+'.csv';
-    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-    showQuickMsg('Historique téléchargé ✔️');
-  }catch(e){ console.error(e); showQuickMsg('Erreur export', '#ef4444'); }
-}
-
-/* -----------------------
-   UTILS
-   ----------------------- */
-
-function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function unescapeHtml(s){ return String(s).replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"'); }
-
-/* -----------------------
-   VOLUME VIEW (summary)
-   ----------------------- */
-
-window.viewVolumeStats = function(){
-  let html = '<h3 style="margin-top:0;color:var(--accent)">📊 Volume estimé</h3>';
-  let rows = '';
-  Object.values(state.program).forEach(sess => {
-    sess.exercises.forEach(ex => {
-      const w = state.weights[ex.name] || ex.weight || 0;
-      const baseReps = (typeof ex.reps === 'number')? ex.reps : parseInt(String(ex.reps).split('-')[0],10) || 0;
-      const vol = Math.round(w * baseReps * ex.sets);
-      rows += '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03)"><div><strong>'+ex.name+'</strong><div style="color:var(--text-secondary);font-size:12px">'+sess.title+'</div></div><div style="text-align:right"><div class="volume-badge">'+vol+' kg</div><div style="font-size:12px;color:var(--text-secondary)">'+ex.sets+'×'+baseReps+'×'+w+'</div></div></div>';
-    });
-  });
-  html += '<div style="max-height:320px;overflow:auto;margin-top:8px">'+rows+'</div>';
-  html += '<div style="margin-top:12px;display:flex;gap:8px"><button class="btn-secondary small" onclick="drawMuscleChart()">Rafraîchir Chart</button><button class="btn-save small" onclick="closeModal()">Fermer</button></div>';
-  openModal(html);
-};
-document.getElementById('openStats').addEventListener('click', openStatsModal);
-
-/* -----------------------
-   RESET / NAV
-   ----------------------- */
-
-window.resetApp = function(){
-  const ok = confirm('Réinitialiser toutes les données ? (localStorage sera vidé)');
-  if(!ok) return;
-  localStorage.removeItem(STATE_KEY); localStorage.removeItem(LAST_SESSION_KEY);
-  state = defaultState(); saveState(); renderHeader(); renderProgramList(); showQuickMsg('Application réinitialisée', '#ef4444');
-};
-document.getElementById('resetApp').addEventListener('click', resetApp);
-
-document.getElementById('prevWeek').addEventListener('click', function(){ state.week = Math.max(1, state.week-1); saveState(); renderHeader(); showQuickMsg('Semaine '+state.week); });
-document.getElementById('advanceWeek').addEventListener('click', function(){ state.week = state.week+1; saveState(); renderHeader(); showQuickMsg('Semaine '+state.week); });
-document.getElementById('backHomeBtn').addEventListener('click', function(){ showScreen('home'); renderHeader(); renderProgramList(); });
-
-document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
-
-/* -----------------------
-   INIT
-   ----------------------- */
-
-state = loadState();
-renderHeader();
-renderProgramList();
-// attach muscle analysis button
-document.getElementById('muscleAnalysisBtn').addEventListener('click', showMuscleAnalysisModal);
-// attach viewVolumeStats to openStats alternative if needed
-document.getElementById('openStats').addEventListener('click', openStatsModal);
-
-})(); // IIFE
-</script>
-<!-- ✅ Fix bouton "Fermer" du panneau Statistiques -->
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const closeStatsBtn = document.getElementById("closeStats");
-  if (closeStatsBtn) {
-    closeStatsBtn.addEventListener("click", () => {
-      // Essaie de masquer la fenêtre Statistiques selon sa structure
-      const statsPanel = document.getElementById("statsPanel") 
-                      || document.querySelector(".stats-container")
-                      || document.querySelector(".stats-panel")
-                      || document.querySelector(".modal");
-      if (statsPanel) {
-        statsPanel.style.display = "none";
-      }
-    });
+const statsCtx = document.getElementById("statsChart").getContext("2d");
+const muscleCtx = document.getElementById("muscleChart").getContext("2d");
+
+const statsChart = new Chart(statsCtx, {
+  type: "bar",
+  data: {
+    labels: ["Lundi", "Mercredi", "Vendredi"],
+    datasets: [{
+      label: "Volume total (kg)",
+      data: [8200, 9400, 10200],
+      backgroundColor: "rgba(255,102,0,0.6)",
+      borderColor: "#ff6600",
+      borderWidth: 2
+    },{
+      type: "line",
+      label: "Progression",
+      data: [8000, 9000, 10200],
+      borderColor: "#ffcc33",
+      tension: 0.3
+    }]
+  },
+  options: {
+    plugins: { legend: { labels: { color: "#fff" } } },
+    scales: { x: { ticks: { color: "#fff" } }, y: { ticks: { color: "#fff" } } }
   }
 });
+
+const muscleChart = new Chart(muscleCtx, {
+  type: "radar",
+  data: {
+    labels: ["Pectoraux","Dos","Épaules","Jambes","Triceps","Biceps"],
+    datasets: [{
+      label: "Muscles travaillés (%)",
+      data: [85, 70, 60, 90, 65, 50],
+      backgroundColor: "rgba(255,102,0,0.4)",
+      borderColor: "#ff9933",
+      pointBackgroundColor: "#fff"
+    }]
+  },
+  options: {
+    scales: { r: { angleLines: { color: "#333" }, grid: { color: "#444" }, pointLabels: { color: "#fff" }, ticks: { color: "#ff9933" } } },
+    plugins: { legend: { labels: { color: "#fff" } } }
+  }
+});
+
+function show(id){ document.getElementById(id).classList.add("show"); }
+function hide(id){ document.getElementById(id).classList.remove("show"); }
+
+document.getElementById("openStats").onclick=()=>show("statsPanel");
+document.getElementById("openMuscle").onclick=()=>show("muscleModal");
+document.getElementById("closeStats").onclick=()=>hide("statsPanel");
+document.getElementById("closeMuscle").onclick=()=>hide("muscleModal");
 </script>
-  <!-- ✅ Fix bouton "Fermer" du panneau Statistiques -->
-<script>
 </body>
 </html>
